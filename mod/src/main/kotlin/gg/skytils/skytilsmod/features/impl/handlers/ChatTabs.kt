@@ -120,7 +120,7 @@ object ChatTabs : EventSubscriber {
 
     fun mouseInput(event: ScreenMouseInputEvent) {
         if (!Utils.isOnHypixel || event.screen !is GuiChat) return
-        event.cancelled = !ChatTab.screen.clickMouse(event.mouseX.toDouble(), event.mouseY.toDouble(), event.button)
+        event.cancelled = event.cancelled || ChatTab.screen.clickMouse(event.mouseX.toDouble(), event.mouseY.toDouble(), event.button)
         val chat = mc.ingameGUI.chatGUI
         chat as AccessorGuiNewChat
         if (GuiScreen.isCtrlKeyDown() && DevTools.getToggle("chat")) {
