@@ -23,11 +23,11 @@ import gg.essential.universal.UKeyboard
 import gg.skytils.event.EventPriority
 import gg.skytils.event.EventSubscriber
 import gg.skytils.event.impl.play.WorldUnloadEvent
+import gg.skytils.event.impl.render.CheckRenderEntityEvent
 import gg.skytils.event.register
 import gg.skytils.skytilsmod.Skytils
 import gg.skytils.skytilsmod._event.PacketReceiveEvent
 import gg.skytils.skytilsmod.core.tickTimer
-import gg.skytils.skytilsmod.events.impl.CheckRenderEntityEvent
 import gg.skytils.skytilsmod.utils.*
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.network.play.server.S02PacketChat
@@ -62,7 +62,7 @@ object KuudraFeatures : EventSubscriber {
         if (event.entity !is EntityArmorStand || SBInfo.mode != SkyblockIsland.KuudraHollow.mode) return
         if (Skytils.config.kuudraHideNonNametags && !kuudraOver && !UKeyboard.isKeyDown(UKeyboard.KEY_LMENU)) {
             if (event.entity.isInvisible && !event.entity.alwaysRenderNameTag) {
-                event.isCanceled = true
+                event.cancelled = true
             }
         }
     }

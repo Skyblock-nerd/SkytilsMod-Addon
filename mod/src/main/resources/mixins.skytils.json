@@ -80,7 +80,6 @@
     "renderer.MixinRendererLivingEntity",
     "renderer.MixinRenderItem",
     "renderer.MixinRenderLightningBolt",
-    "renderer.MixinRenderManager",
     "renderer.MixinTileEntityChestRenderer",
     "renderer.MixinTileEntityItemStackRenderer",
     "renderer.MixinTileEntitySkullRenderer",
