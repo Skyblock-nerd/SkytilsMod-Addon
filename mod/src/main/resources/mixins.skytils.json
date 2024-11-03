@@ -90,7 +90,6 @@
     "util.MixinChatStyle",
     "util.MixinIChatComponentSerializer",
     "util.MixinUtil",
-    "world.MixinChunk",
     "world.MixinWorld"
   ],
   "verbose": true,

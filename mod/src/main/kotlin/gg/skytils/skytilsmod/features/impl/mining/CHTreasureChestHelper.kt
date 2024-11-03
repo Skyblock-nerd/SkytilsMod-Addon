@@ -22,12 +22,12 @@ import gg.essential.universal.UMatrixStack
 import gg.skytils.event.EventSubscriber
 import gg.skytils.event.impl.play.WorldUnloadEvent
 import gg.skytils.event.impl.render.WorldDrawEvent
+import gg.skytils.event.impl.world.BlockStateUpdateEvent
 import gg.skytils.event.register
 import gg.skytils.skytilsmod.Skytils
 import gg.skytils.skytilsmod.Skytils.mc
 import gg.skytils.skytilsmod._event.PacketReceiveEvent
 import gg.skytils.skytilsmod._event.PacketSendEvent
-import gg.skytils.skytilsmod.events.impl.BlockChangeEvent
 import gg.skytils.skytilsmod.utils.*
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.init.Blocks
@@ -43,7 +43,7 @@ import java.awt.Color
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.abs
 
-object CHTreasureChestHelper :EventSubscriber {
+object CHTreasureChestHelper : EventSubscriber {
 
     var lastFoundChest = -1L
     var found = 0
@@ -70,7 +70,7 @@ object CHTreasureChestHelper :EventSubscriber {
         register(::onBlockChange)
     }
 
-    fun onBlockChange(event: BlockChangeEvent) {
+    fun onBlockChange(event: BlockStateUpdateEvent) {
         if (!Skytils.config.chTreasureHelper || mc.thePlayer == null || SBInfo.mode != SkyblockIsland.CrystalHollows.mode) return
         if (((event.old.block == Blocks.air || event.old.block == Blocks.stone) && event.update.block == Blocks.chest)) {
             printDevMessage("Distance ${event.pos} ${mc.thePlayer.getDistanceSq(event.pos)}", "chtreasure")
