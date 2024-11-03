@@ -20,6 +20,7 @@ package gg.skytils.event.impl.render
 
 import gg.skytils.event.CancellableEvent
 import gg.skytils.event.Event
+import net.minecraft.client.renderer.entity.RendererLivingEntity
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 
@@ -27,7 +28,7 @@ import net.minecraft.entity.EntityLivingBase
 /**
  * [gg.skytils.event.mixins.render.MixinRendererLivingEntity.onRender]
  */
-class LivingEntityPreRenderEvent<T : EntityLivingBase>(val entity: T, val x: Double, val y: Double, val z: Double, val partialTicks: Float) : CancellableEvent()
+class LivingEntityPreRenderEvent<T : EntityLivingBase>(val entity: T, val renderer: RendererLivingEntity<T>, val x: Double, val y: Double, val z: Double, val partialTicks: Float) : CancellableEvent()
 
 /**
  * [gg.skytils.event.mixins.render.MixinRendererLivingEntity.onRenderPost]
