@@ -18,6 +18,12 @@
 
 package gg.skytils.skytilsmod.features.impl.funny.skytilsplus
 
+import gg.skytils.event.EventSubscriber
+import gg.skytils.event.impl.entity.EntityJoinWorldEvent
+import gg.skytils.event.impl.entity.LivingEntityDeathEvent
+import gg.skytils.event.impl.play.WorldUnloadEvent
+import gg.skytils.event.impl.render.LivingEntityPreRenderEvent
+import gg.skytils.event.register
 import gg.skytils.skytilsmod.Skytils.mc
 import gg.skytils.skytilsmod.core.tickTimer
 import gg.skytils.skytilsmod.mixins.transformers.accessors.AccessorEntity
@@ -42,14 +48,9 @@ import net.minecraft.entity.monster.EntitySkeleton
 import net.minecraft.entity.monster.EntitySlime
 import net.minecraft.entity.passive.*
 import net.minecraft.item.EnumDyeColor
-import net.minecraftforge.client.event.RenderLivingEvent
-import net.minecraftforge.event.entity.EntityJoinWorldEvent
-import net.minecraftforge.event.entity.living.LivingDeathEvent
-import net.minecraftforge.event.world.WorldEvent
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.abs
 
-object SheepifyRebellion {
+object SheepifyRebellion : EventSubscriber {
     val fakeWorld by lazy {
         getClassHelper("gg.essential.gui.common.EmulatedUI3DPlayer\$FakeWorld")?.let { clazz ->
             val instance = clazz.getFieldHelper("INSTANCE")?.get(null)
@@ -79,17 +80,16 @@ object SheepifyRebellion {
         }
     }
 
-    @SubscribeEvent
     fun playerSpawn(event: EntityJoinWorldEvent) {
         if (event.entity !is AbstractClientPlayer || event.entity.uniqueID.version() == 2) return
 
         if (Utils.inSkyblock) {
             checkForFakeModel(event.entity as AbstractClientPlayer)
         } else if (event.entity is EntityPlayerSP) {
-            val world = event.world
+            val world = event.entity.worldObj
             tickTimer(5) {
                 if (Utils.inSkyblock && mc.theWorld == world) {
-                    event.world.playerEntities.forEach {
+                    world.playerEntities.forEach {
                         if (it is AbstractClientPlayer && it.uniqueID.version() != 2 && it !in dummyModelMap) {
                             checkForFakeModel(it)
                         }
@@ -99,20 +99,17 @@ object SheepifyRebellion {
         }
     }
 
-    @SubscribeEvent
-    fun playerLeave(event: LivingDeathEvent) {
+    fun playerLeave(event: LivingEntityDeathEvent) {
         dummyModelMap.remove(event.entity)?.setDead()
     }
 
-    @SubscribeEvent
-    fun onWorldUnload(event: WorldEvent.Unload) {
+    fun onWorldUnload(event: WorldUnloadEvent) {
         dummyModelMap.clear()
     }
 
-    @SubscribeEvent
-    fun onRender(event: RenderLivingEvent.Pre<*>) {
+    fun onRender(event: LivingEntityPreRenderEvent<*>) {
         val fakeEntity = dummyModelMap[event.entity] ?: return
-        event.isCanceled = true
+        event.cancelled = true
         val renderer = event.renderer.renderManager.getEntityRenderObject<EntityLivingBase>(fakeEntity)
         copyProperties(fakeEntity, event.entity)
         renderer.doRender(fakeEntity, event.x, event.y, event.z, event.entity.rotationYaw, 1f)
@@ -210,6 +207,12 @@ object SheepifyRebellion {
         }
 
         entity.ticksExisted = originalEntity.ticksExisted
+    }
+
+    override fun setup() {
+        register(::playerSpawn)
+        register(::playerLeave)
+        register(::onWorldUnload)
     }
 
     @Serializable

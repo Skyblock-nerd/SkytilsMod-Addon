@@ -19,28 +19,27 @@
 package gg.skytils.skytilsmod.features.impl.funny.skytilsplus
 
 import gg.essential.universal.UChat
+import gg.skytils.event.EventSubscriber
+import gg.skytils.event.impl.play.ChatMessageSentEvent
+import gg.skytils.event.register
 import gg.skytils.skytilsmod.Skytils
 import gg.skytils.skytilsmod.Skytils.mc
-import gg.skytils.skytilsmod.events.impl.SendChatMessageEvent
 import gg.skytils.skytilsmod.features.impl.funny.skytilsplus.gui.GachaGui
 import gg.skytils.skytilsmod.utils.SuperSecretSettings
 import gg.skytils.skytilsmod.utils.Utils
-import net.minecraftforge.common.MinecraftForge
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
-object SkytilsPlus {
+object SkytilsPlus : EventSubscriber {
     var redeemed: Boolean
         private set
 
     init {
         redeemed = SuperSecretSettings.settings.contains("skytilsplus")
-        listOf(AdManager, SheepifyRebellion).forEach(MinecraftForge.EVENT_BUS::register)
+        listOf(AdManager, SheepifyRebellion).forEach(EventSubscriber::setup)
     }
 
-    @SubscribeEvent
-    fun onSendChat(event: SendChatMessageEvent) {
+    fun onSendChat(event: ChatMessageSentEvent) {
         if (Utils.isBSMod && event.message.startsWith("/bsmod+ redeem")) {
-            event.isCanceled = true
+            event.cancelled = true
             val code = event.message.split(" ").getOrNull(2)
             when (code) {
                 "FREETRIAL" -> {
@@ -64,5 +63,9 @@ object SkytilsPlus {
     fun markRedeemed() {
         redeemed = true
         SuperSecretSettings.add("skytilsplus")
+    }
+
+    override fun setup() {
+        register(::onSendChat)
     }
 }

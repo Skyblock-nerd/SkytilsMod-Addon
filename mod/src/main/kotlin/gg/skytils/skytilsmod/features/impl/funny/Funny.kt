@@ -96,7 +96,7 @@ object Funny {
     }
 
     init {
-        MinecraftForge.EVENT_BUS.register(SkytilsPlus)
+        SkytilsPlus.setup()
         GuiManager.registerElement(JamCatElement)
     }
 

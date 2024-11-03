@@ -20,7 +20,10 @@ package gg.skytils.skytilsmod.features.impl.funny.skytilsplus
 
 import gg.essential.universal.utils.MCClickEventAction
 import gg.essential.universal.wrappers.message.UTextComponent
-import gg.essential.vigilance.gui.SettingsGui
+import gg.skytils.event.EventSubscriber
+import gg.skytils.event.impl.screen.GuiContainerBackgroundDrawnEvent
+import gg.skytils.event.impl.screen.ScreenOpenEvent
+import gg.skytils.event.register
 import gg.skytils.skytilsmod.Skytils.mc
 import gg.skytils.skytilsmod.core.tickTimer
 import gg.skytils.skytilsmod.features.impl.dungeons.catlas.core.CatlasConfig
@@ -33,37 +36,34 @@ import gg.skytils.skytilsmod.utils.Utils
 import gg.skytils.skytilsmod.utils.graphics.ScreenRenderer
 import gg.skytils.skytilsmod.utils.graphics.SmartFontRenderer
 import gg.skytils.skytilsmod.utils.graphics.colors.CommonColors
-import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.util.ResourceLocation
-import net.minecraftforge.client.event.GuiOpenEvent
-import net.minecraftforge.client.event.GuiScreenEvent
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.random.Random
 
-object AdManager {
+object AdManager : EventSubscriber {
     private val ad = ResourceLocation("skytils:skytilsplus/codeskytils.png")
     private var lastAdBreak = -1L
 
-    @SubscribeEvent
-    fun onGuiOpen(event: GuiOpenEvent) {
+    override fun setup() {
+        register(::onGuiOpen)
+        register(::onGuiDraw)
+    }
+
+    fun onGuiOpen(event: ScreenOpenEvent) {
         if (!Utils.isBSMod || SkytilsPlus.redeemed) return
         if (mc.currentScreen is PaywallGui) return
-        if (event.gui is ReopenableGUI || (event.gui as? AccessorSettingsGui)?.config == CatlasConfig) {
-            event.gui = PaywallGui(event.gui)
+        if (event.screen is ReopenableGUI || (event.screen as? AccessorSettingsGui)?.config == CatlasConfig) {
+            event.screen = PaywallGui(event.screen!!)
         }
     }
 
-    @SubscribeEvent
-    fun onGuiDraw(event: GuiScreenEvent.BackgroundDrawnEvent) {
+    fun onGuiDraw(event: GuiContainerBackgroundDrawnEvent) {
         if (!Utils.isBSMod || SkytilsPlus.redeemed) return
-        if (event.gui is GuiContainer) {
-            RenderUtil.renderTexture(ad, 5, 5, 244, 307, false)
-            ScreenRenderer.fontRenderer.drawString("Want a break from the ads? Get BSMod+ today!", 5f, 5 + 307 + 10f, CommonColors.RAINBOW, shadow = SmartFontRenderer.TextShadow.OUTLINE)
+        RenderUtil.renderTexture(ad, 5, 5, 244, 307, false)
+        ScreenRenderer.fontRenderer.drawString("Want a break from the ads? Get BSMod+ today!", 5f, 5 + 307 + 10f, CommonColors.RAINBOW, shadow = SmartFontRenderer.TextShadow.OUTLINE)
 
-            if (System.currentTimeMillis() - lastAdBreak > 1000 * 60) {
-                lastAdBreak = System.currentTimeMillis()
-                Utils.playLoudSound("skytils:bsmod.sparkle_adbreak", 1.0)
-            }
+        if (System.currentTimeMillis() - lastAdBreak > 1000 * 60) {
+            lastAdBreak = System.currentTimeMillis()
+            Utils.playLoudSound("skytils:bsmod.sparkle_adbreak", 1.0)
         }
     }
 
