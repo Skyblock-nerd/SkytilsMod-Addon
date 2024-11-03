@@ -288,7 +288,6 @@ object Skytils : CoroutineScope, EventSubscriber {
 
         arrayOf(
             this,
-            NamespacedCommands,
             DamageSplash,
             Funny,
             ScoreCalculation,
@@ -352,6 +351,7 @@ object Skytils : CoroutineScope, EventSubscriber {
             MinionFeatures,
             MiscFeatures,
             MythologicalTracker,
+            NamespacedCommands,
             QuiverStuff,
             PartyAddons,
             PartyFeatures,

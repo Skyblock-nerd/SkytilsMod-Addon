@@ -19,8 +19,10 @@
 package gg.skytils.skytilsmod.features.impl.handlers
 
 import gg.essential.universal.UChat
+import gg.skytils.event.EventSubscriber
+import gg.skytils.event.impl.play.ChatMessageSentEvent
+import gg.skytils.event.register
 import gg.skytils.skytilsmod.Skytils.mc
-import gg.skytils.skytilsmod.events.impl.SendChatMessageEvent
 import gg.skytils.skytilsmod.mixins.transformers.accessors.AccessorCommandHandler
 import gg.skytils.skytilsmod.utils.ObservableAddEvent
 import gg.skytils.skytilsmod.utils.ObservableClearEvent
@@ -30,7 +32,6 @@ import net.minecraft.command.ICommand
 import net.minecraftforge.client.ClientCommandHandler
 import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.ModContainer
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 /**
  * Namespaced commands is a feature which generates namespaces for commands.
@@ -42,7 +43,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
  *
  * This is useful when multiple mods register a command with the same name
  */
-object NamespacedCommands {
+object NamespacedCommands : EventSubscriber {
     val cch by lazy {
         ClientCommandHandler.instance as AccessorCommandHandler
     }
@@ -104,12 +105,15 @@ object NamespacedCommands {
      * When a command is sent using the `server` namespace, it is passed directly to the server
      * instead of running a client command.
      */
-    @SubscribeEvent
-    fun onSendChat(event: SendChatMessageEvent) {
+    fun onSendChat(event: ChatMessageSentEvent) {
         if (event.message.startsWith("/server:")) {
-            event.isCanceled = true
+            event.cancelled = true
             UChat.say('/' + event.message.substringAfter("/server:"))
             mc.ingameGUI.chatGUI.addToSentMessages(event.message)
         }
+    }
+
+    override fun setup() {
+        register(::onSendChat)
     }
 }
