@@ -41,11 +41,6 @@ public abstract class MixinGuiScreen extends Gui implements GuiYesNoCallback {
         this.mc = Minecraft.getMinecraft();
     }
 
-    @Inject(method = "sendChatMessage(Ljava/lang/String;Z)V", at = @At("HEAD"), cancellable = true)
-    private void onSendChatMessage(String message, boolean addToChat, CallbackInfo ci) {
-        GuiScreenHookKt.onSendChatMessage(message, addToChat, ci);
-    }
-
     @Inject(method = "handleComponentClick", at = @At(value = "INVOKE", target = "Lnet/minecraft/event/ClickEvent;getAction()Lnet/minecraft/event/ClickEvent$Action;"), cancellable = true)
     private void blockComponentClick(IChatComponent s, CallbackInfoReturnable<Boolean> cir) {
         GuiScreenHookKt.onComponentClick(s, cir);

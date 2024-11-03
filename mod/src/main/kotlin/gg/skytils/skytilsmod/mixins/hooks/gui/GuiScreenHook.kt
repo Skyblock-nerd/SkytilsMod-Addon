@@ -18,16 +18,10 @@
 package gg.skytils.skytilsmod.mixins.hooks.gui
 
 import gg.skytils.skytilsmod.Skytils
-import gg.skytils.skytilsmod.events.impl.SendChatMessageEvent
 import gg.skytils.skytilsmod.utils.Utils
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.util.IChatComponent
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable
-
-fun onSendChatMessage(message: String, addToChat: Boolean, ci: CallbackInfo) {
-    if (SendChatMessageEvent(message, addToChat).postAndCatch()) ci.cancel()
-}
 
 fun onComponentClick(component: IChatComponent, cir: CallbackInfoReturnable<Boolean>) {
     if (Utils.isOnHypixel && Skytils.config.copyChat && GuiScreen.isCtrlKeyDown()) cir.returnValue =
